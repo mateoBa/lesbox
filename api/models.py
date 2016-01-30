@@ -198,7 +198,7 @@ class Track(models.Model):
     artist_name = models.CharField(max_length=1024)
 
     played = models.BooleanField()
-    played_time = models.IntegerField(null=True)
+    played_time = models.IntegerField(null=True, blank=True)
 
     priority = models.IntegerField()
 
