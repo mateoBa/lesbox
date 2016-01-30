@@ -48,7 +48,8 @@ class PartySecretComplexSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     members = UserSerializer(many=True, read_only=True)
     get_total_tracks = TrackSerializer(many=True, read_only=True)
+    get_last_played_track = TrackSerializer(read_only=True)
 
     class Meta:
         model = Party
-        fields = ('id', 'owner', 'name', 'members', 'secret', 'get_total_tracks')
+        fields = ('id', 'owner', 'name', 'members', 'secret', 'get_last_played_track', 'get_total_tracks')

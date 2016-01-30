@@ -8,6 +8,7 @@ import datetime
 from django.db import models
 import json
 import time
+from django.db.models import Max
 import requests
 
 __author__ = 'agusx1211'
@@ -117,9 +118,12 @@ class Party(models.Model):
         try:
             track = self.get_all_tracks_in_order()[0]
             track.played = True
+            track.played_time = time.time()
             track.save()
+
             self.current_user = self.get_next_user()
             self.save()
+
             return track
         except IndexError:
             return None
@@ -172,6 +176,12 @@ class Party(models.Model):
     def get_total_tracks(self):
         return self.get_all_tracks_in_order()
 
+    def get_last_played_track(self):
+        try:
+            return Track.objects.filter(party=self, played=True).latest('played_time')
+        except Exception:
+            return None
+
 
 class Track(models.Model):
     id = models.AutoField(primary_key=True)
@@ -191,6 +201,7 @@ class Track(models.Model):
     artist_name = models.CharField(max_length=1024)
 
     played = models.BooleanField()
+    played_time = models.IntegerField(null=True, blank=True)
 
     priority = models.IntegerField()
 
@@ -243,52 +254,3 @@ class Track(models.Model):
     @staticmethod
     def del_all_tracks(party, user):
         Track.get_all_tracks(party, user).delete()
-
-    """
-    @staticmethod
-    def get_all_party_tracks_sorted(party):
-        theatrical_party = party
-
-        total_tracks = []
-        users_tracks = dict()
-
-        members = theatrical_party.get_members_in_order()
-
-        for member in members:
-            users_tracks[member.spotify_id] = Track.get_all_tracks_sorted(theatrical_party, member)
-
-        finish = False
-
-        while not finish:
-            all_checked = False
-            loop_count = 0
-
-            while not all_checked:
-                current_user = theatrical_party.get_next_user()
-
-                next_user_tracks = []
-
-                for user_track in users_tracks[current_user.spotify_id]:
-                    if not user_track.played:
-                        next_user_tracks.append(user_track)
-
-                if loop_count > len(theatrical_party.get_members_in_order()):
-                    all_checked = True
-                    finish = True
-
-                if len(next_user_tracks) > 0:
-                    next_track = next_user_tracks[0]
-                    total_tracks.append(next_track)
-
-                    next_track.played = True
-
-                    theatrical_party.current_user = theatrical_party.get_next_user()
-                    all_checked = True
-
-                else:
-                    loop_count += 1
-
-        for total_track in total_tracks:
-            total_track.played = False
-
-        return total_tracks"""
