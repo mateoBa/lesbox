@@ -177,7 +177,10 @@ class Party(models.Model):
         return self.get_all_tracks_in_order()
 
     def get_last_played_track(self):
-        return Track.objects.all().filter(party=[self], played=True).aggregate(Max('played_time'))
+        try:
+            return Track.objects.filter(party=self, played=True).latest('played_time')
+        except Exception:
+            return None
 
 
 class Track(models.Model):
