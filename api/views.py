@@ -36,7 +36,7 @@ def login(request):
 
     if u.last_token_spotify != received_json_data["spotifyToken"]:
         u.last_token_spotify = received_json_data["spotifyToken"]
-        if u.check_token_spotify(u.last_token_spotify):
+        if u.check_token_spotify():
             u.save()
             serializer = AccountSerializer(u, many=False)
             return JSONResponse(serializer.data)
