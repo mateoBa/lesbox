@@ -7,13 +7,13 @@ __author__ = 'agusx1211'
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('userName', 'spotifyId', 'email', 'lastTokenSpotify', 'account_type')
+        fields = ('user_name', 'spotify_id', 'email', 'last_token_spotify', 'account_type')
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('userName', 'spotifyId', 'email', 'account_type')
+        fields = ('user_name', 'spotify_id', 'get_current_luck', 'email')
 
 
 class PartySerializer(serializers.ModelSerializer):
@@ -24,7 +24,31 @@ class PartySerializer(serializers.ModelSerializer):
         model = Party
         fields = ('id', 'owner', 'name', 'members')
 
+
 class TrackSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Track
-        fields = ('id', 'user', 'get_party_id', 'spotify_track_id', 'name', 'duration_ms', 'explicit', 'preview_url', 'href', 'popularity', 'uri', 'priority')
+        fields = (
+            'id', 'user', 'get_party_id', 'spotify_track_id', 'name', 'duration_ms', 'explicit', 'preview_url', 'href',
+            'popularity', 'uri', 'priority', 'artist_name')
+
+
+class PartySecretSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only=True)
+    members = UserSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Party
+        fields = ('id', 'owner', 'name', 'members', 'secret')
+
+
+class PartySecretComplexSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only=True)
+    members = UserSerializer(many=True, read_only=True)
+    get_total_tracks = TrackSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Party
+        fields = ('id', 'owner', 'name', 'members', 'secret', 'get_total_tracks')

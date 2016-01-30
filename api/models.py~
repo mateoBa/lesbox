@@ -20,6 +20,10 @@ class User(models.Model):
     last_token_spotify = models.CharField(max_length=255)
     "expireDateTokenSpotify = models.IntegerField()"
 
+    ACCOUNT_TYPE = (
+        ('f', 'Free'),
+        ('p', 'Premium'),
+    )
     account_type = models.CharField(max_length=255)
 
     def __str__(self):
