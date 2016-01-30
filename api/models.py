@@ -5,9 +5,11 @@ import logging
 from operator import attrgetter
 import random
 import datetime
+from warnings import cls
 from django.db import models
 import json
 import time
+import requests
 
 __author__ = 'agusx1211'
 
@@ -25,30 +27,14 @@ class User(models.Model):
     def __str__(self):
         return self.spotify_id
 
-    def check_token_spotify(self, new_token):
+    def check_token_spotify(self):
         """Returns is the token is valid for Spotify server."""
-        import urllib2
-        req = urllib2.Request('https://api.spotify.com/v1/me')
-        req.add_header('Authorization', 'Bearer ' + new_token)
-
-        try:
-            resp = urllib2.urlopen(req)
-        except urllib2.HTTPError, e:
-            return False
-        except urllib2.URLError, e:
-            return False
-        except httplib.HTTPException, e:
-            return False
-        except Exception:
-            return False
-
-        content = resp.read()
-
-        spotify_data = json.loads(content)
-
-        if spotify_data["id"] == self.spotify_id:
-            self.last_token_spotify = new_token
-            return True
+        auth_header = 'Bearer %s' % self.lastTokenSpotify
+        res = requests.get('https://api.spotify.com/v1/me',
+                           HTTP_AUTHORIZATION=auth_header)
+        if res.status_code == 200:
+            spotify_data = json.loads(res.content)
+            return spotify_data["id"] == self.spotifyId
         else:
             return False
 
@@ -65,7 +51,7 @@ class User(models.Model):
             return self.check_token_spotify(access_token)
 
     def get_current_luck(self):
-        """Devuelve un valor al azar, que sea usado para calcular
+        """Devuelve un valor al azar, que sera usado para calcular
         el orden en el que son reproducidas las canciones en la Party"""
         random.seed(self.email + datetime.datetime.now().strftime("%Y-%m-%d"))
         result = random.randint(0, 9223372036854775806)
@@ -86,9 +72,9 @@ class Party(models.Model):
     def __str__(self):
         return self.name
 
-    @staticmethod
+    @classmethod
     def create_party(_owner, _name):
-        p = Party(owner=_owner, name=_name)
+        p = cls(owner=_owner, name=_name)
 
         "Se genera el secret"
         p.secret = hashlib.sha256(
