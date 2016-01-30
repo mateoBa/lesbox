@@ -72,8 +72,8 @@ class Party(models.Model):
         return self.name
 
     @classmethod
-    def create_party(_owner, _name):
-        p = Party(owner=_owner, name=_name)
+    def create_party(cls, _owner, _name):
+        p = cls(owner=_owner, name=_name)
 
         "Se genera el secret"
         p.secret = hashlib.sha256(
