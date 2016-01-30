@@ -76,6 +76,7 @@ class Party(models.Model):
     members = models.ManyToManyField(User, related_name='members')
 
     current_user = models.ForeignKey(User, related_name='current_user', null="True")
+    current_track = models.ForeignKey(Track, related_name='last_track', null="True")
 
     secret = models.CharField(max_length=65, null="True")
 
@@ -118,8 +119,11 @@ class Party(models.Model):
             track = self.get_all_tracks_in_order()[0]
             track.played = True
             track.save()
+
+            self.last_track = track
             self.current_user = self.get_next_user()
             self.save()
+
             return track
         except IndexError:
             return None
