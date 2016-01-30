@@ -93,3 +93,5 @@ target/
 *.iws
 *~
 
+lesbox/local_settings.py
+lesbox/test_settings.py
