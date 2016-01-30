@@ -30,7 +30,7 @@ class User(models.Model):
         """Returns is the token is valid for Spotify server."""
         import urllib2
         req = urllib2.Request('https://api.spotify.com/v1/me')
-        req.add_header('Authorization', 'Bearer ' + self.lastTokenSpotify)
+        req.add_header('Authorization', 'Bearer ' + self.last_token_spotify)
 
         try:
             resp = urllib2.urlopen(req)
@@ -46,7 +46,7 @@ class User(models.Model):
         content = resp.read()
 
         spotify_data = json.loads(content)
-        return spotify_data["id"] == self.spotifyId
+        return spotify_data["id"] == self.spotify_id
 
     def join_party(self, party):
         party.members.add(self)
