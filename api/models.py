@@ -33,7 +33,7 @@ class User(models.Model):
                            headers={"HTTP_AUTHORIZATION": auth_header})
         if res.status_code == 200:
             spotify_data = json.loads(res.content)
-            return spotify_data["id"] == self.spotifyId
+            return spotify_data["id"] == self.spotify_id
         else:
             return False
 
@@ -190,7 +190,7 @@ class Track(models.Model):
         return self.party.id
 
     def get_user_id(self):
-        return self.user.spotifyId
+        return self.user.spotify_id
 
     @staticmethod
     def create_track(_user, _party, _spotify_track_id, _name, _duration_ms, _explicit, _preview_url, _href, _popularity,
