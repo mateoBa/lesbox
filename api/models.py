@@ -28,7 +28,7 @@ class User(models.Model):
 
     def check_token_spotify(self):
         """Returns is the token is valid for Spotify server."""
-        auth_header = 'Bearer %s' % self.lastTokenSpotify
+        auth_header = 'Bearer %s' % self.last_token_spotify
         res = requests.get('https://api.spotify.com/v1/me',
                            HTTP_AUTHORIZATION=auth_header)
         if res.status_code == 200:
