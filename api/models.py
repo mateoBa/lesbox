@@ -153,8 +153,8 @@ class Party(models.Model):
 
     def get_next_user(self):
         if self.current_user is not None:
-            if len(self.get_members_in_order()) > self.get_members_in_order().index(self.current_user) - 1:
-                return self.get_members_in_order()[self.get_members_in_order().index(self.current_user) - 1]
+            if len(self.get_members_in_order()) > self.get_members_in_order().index(self.current_user) + 1:
+                return self.get_members_in_order()[self.get_members_in_order().index(self.current_user) + 1]
             else:
                 return self.get_members_in_order()[0]
         else:
