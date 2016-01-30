@@ -5,7 +5,6 @@ import logging
 from operator import attrgetter
 import random
 import datetime
-from warnings import cls
 from django.db import models
 import json
 import time
@@ -74,7 +73,7 @@ class Party(models.Model):
 
     @classmethod
     def create_party(_owner, _name):
-        p = cls(owner=_owner, name=_name)
+        p = Party(owner=_owner, name=_name)
 
         "Se genera el secret"
         p.secret = hashlib.sha256(
