@@ -8,6 +8,7 @@ import datetime
 from django.db import models
 import json
 import time
+from django.db.models import Max
 import requests
 
 __author__ = 'agusx1211'
@@ -76,7 +77,6 @@ class Party(models.Model):
     members = models.ManyToManyField(User, related_name='members')
 
     current_user = models.ForeignKey(User, related_name='current_user', null="True")
-    current_track = models.ForeignKey(Track, related_name='last_track', null="True")
 
     secret = models.CharField(max_length=65, null="True")
 
@@ -118,9 +118,9 @@ class Party(models.Model):
         try:
             track = self.get_all_tracks_in_order()[0]
             track.played = True
+            track.played_time = time.time()
             track.save()
 
-            self.last_track = track
             self.current_user = self.get_next_user()
             self.save()
 
@@ -176,6 +176,9 @@ class Party(models.Model):
     def get_total_tracks(self):
         return self.get_all_tracks_in_order()
 
+    def get_last_played_track(self):
+        return Track.objects.all().filter(party=[self], played=True).aggregate(Max('played_time'))
+
 
 class Track(models.Model):
     id = models.AutoField(primary_key=True)
@@ -195,6 +198,7 @@ class Track(models.Model):
     artist_name = models.CharField(max_length=1024)
 
     played = models.BooleanField()
+    played_time = models.IntegerField(null=True)
 
     priority = models.IntegerField()
 
