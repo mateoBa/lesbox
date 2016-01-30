@@ -28,14 +28,25 @@ class User(models.Model):
 
     def check_token_spotify(self):
         """Returns is the token is valid for Spotify server."""
-        auth_header = 'Bearer %s' % self.last_token_spotify
-        res = requests.get('https://api.spotify.com/v1/me',
-                           headers={"HTTP_AUTHORIZATION": auth_header})
-        if res.status_code == 200:
-            spotify_data = json.loads(res.content)
-            return spotify_data["id"] == self.spotify_id
-        else:
+        import urllib2
+        req = urllib2.Request('https://api.spotify.com/v1/me')
+        req.add_header('Authorization', 'Bearer ' + self.lastTokenSpotify)
+
+        try:
+            resp = urllib2.urlopen(req)
+        except urllib2.HTTPError, e:
             return False
+        except urllib2.URLError, e:
+            return False
+        except httplib.HTTPException, e:
+            return False
+        except Exception:
+            return False
+
+        content = resp.read()
+
+        spotify_data = json.loads(content)
+        return spotify_data["id"] == self.spotifyId
 
     def join_party(self, party):
         party.members.add(self)
