@@ -95,3 +95,5 @@ target/
 
 lesbox/local_settings.py
 lesbox/test_settings.py
+
+/db.sqlite3
